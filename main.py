@@ -7,7 +7,6 @@ import time
 
 import matplotlib.pyplot as plt
 import matplotlib.dates as md
-import numpy as np
 
 
 class main:
