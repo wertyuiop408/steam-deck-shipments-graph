@@ -16,9 +16,11 @@ class main:
 
         parser = argparse.ArgumentParser(allow_abbrev=False)
         parser.add_argument('--update', action="store_true")
+        parser.add_argument('models', nargs="*", default=["UK-512", "US-512"])
         self.args = parser.parse_args()
-
-
+        
+        # convert models to uppercase
+        self.args.models = list(map(str.upper, self.args.models))
         self.con = sqlite3.connect("deck.db")
         self.cur = self.con.cursor()
         self.sql_tables()
@@ -62,7 +64,8 @@ class main:
             print(f"{ins} rows inserted")
 
             return None
-            
+
+
     def graph_query(self, region: str = "US", model: int = 512) -> tuple:
         
         now_time = int(dt.datetime.today().timestamp())
@@ -97,10 +100,11 @@ class main:
         plt.xticks(rotation=45)
         ax.set_ylabel("Order email received")
 
-        us_512_x, us_512_y = self.graph_query()
-        uk_512_x, uk_512_y = self.graph_query("UK")
-        ax.scatter(us_512_x, us_512_y, 10, label="US-512")
-        ax.scatter(uk_512_x, uk_512_y, 10, label="UK-512")
+        for deck in self.args.models:
+            region, model = deck.split("-")
+            x, y = self.graph_query(region, model)
+            ax.scatter(x, y, 10, label=deck)
+            
         ax.legend()
         fig.savefig("graph.png", bbox_inches="tight")
         return None
