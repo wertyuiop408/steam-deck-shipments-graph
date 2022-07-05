@@ -12,7 +12,7 @@ import numpy as np
 
 class main:
     cur = None
-    
+
     def __init__(self):
 
         parser = argparse.ArgumentParser(allow_abbrev=False)
@@ -32,32 +32,43 @@ class main:
 
 
     def get_sheet(self) -> None:
-        print("getting sheet")
-        csv_url="https://docs.google.com/spreadsheets/d/1QqlSUpqhyBCBYeu_gW4w5vIxfcd7qablSviALDFJ0Dg/export?format=csv"
-        res=requests.get(url=csv_url)
-        open("google.csv", 'wb').write(res.content)
-        return
+        """
+        Downloads the Google Sheet as a csv file
+        """
+        csv_url = "https://docs.google.com/spreadsheets/d/1QqlSUpqhyBCBYeu_gW4w5vIxfcd7qablSviALDFJ0Dg/export?format=csv"
+        res = requests.get(url = csv_url)
+        open("google.csv", "wb").write(res.content)
+        return None
 
 
     def parse_sheet(self) -> None:
-        print("parsing sheet")
+        """
+        Read the CSV file and insert any new entries into the database
+        """
         
         with open("google.csv", newline='') as csvfile:
             reader = csv.reader(csvfile, delimiter=',', quotechar='|')
             stmt = """INSERT OR IGNORE INTO form (
-            "timestamp", region, model, rtReserveTime, initial_estimate, recent_estimate, ready_email
+                "timestamp", region, model, rtReserveTime, initial_estimate, recent_estimate, ready_email
             ) VALUES (?, ?, ?, ?, ?, ?, ?)"""
-            next(reader, None)  # skip the headers
+
+            # skip the headers
+            next(reader, None)
+
             newData = [self.format_row(row) for row in reader]
             
-
             self.cur.execute("BEGIN")
             ins = self.cur.executemany(stmt, newData).rowcount
             self.cur.execute("COMMIT")
             print(f"{ins} rows inserted")
+
+            return None
             
 
-    def graph(self):
+    def graph(self) -> None:
+        """
+        Use the data from the database to plot a scatter graph and save it as a png file.
+        """
         now_time = int(dt.datetime.today().timestamp())
         deck_prerelease = int(time.mktime(dt.datetime(2021, 7, 15).timetuple()))
         day3 = int(time.mktime(dt.datetime(2021, 7, 17).timetuple()))
@@ -101,10 +112,13 @@ class main:
 
         plt.savefig("mygraph.png")
         """
-        return
+        return None
 
 
-    def format_row(self, data):
+    def format_row(self, data) -> tuple:
+        """
+        Formats the 3, 4, and 7th column into ints.
+        """
         return (
             data[0],
             data[1],
@@ -117,6 +131,9 @@ class main:
 
 
     def sql_tables(self):
+        """
+        Create the SQL table
+        """
         self.cur.execute("BEGIN")
         self.cur.execute("""CREATE TABLE IF NOT EXISTS "form" (
             row_id INTEGER PRIMARY KEY,
@@ -130,6 +147,7 @@ class main:
             UNIQUE("timestamp", region, model, rtReserveTime, initial_estimate, recent_estimate, ready_email)
             )""")
         self.cur.execute("COMMIT")
-     
+
+
 if __name__ == "__main__":
     main()
