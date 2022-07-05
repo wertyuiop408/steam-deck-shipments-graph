@@ -12,13 +12,22 @@ import numpy as np
 
 class main:
     cur = None
+    
     def __init__(self):
+
+        parser = argparse.ArgumentParser(allow_abbrev=False)
+        parser.add_argument('--update', action="store_true")
+        self.args = parser.parse_args()
+
+
         self.con = sqlite3.connect("deck.db")
         self.cur = self.con.cursor()
-
         self.sql_tables()
-        self.get_sheet()
-        self.parse_sheet()
+
+        if self.args.update:
+            self.get_sheet()
+            self.parse_sheet()
+
         self.graph()
 
 
@@ -28,6 +37,7 @@ class main:
         res=requests.get(url=csv_url)
         open("google.csv", 'wb').write(res.content)
         return
+
 
     def parse_sheet(self) -> None:
         print("parsing sheet")
