@@ -64,21 +64,18 @@ class main:
 
             return None
             
-
-    def graph(self) -> None:
-        """
-        Use the data from the database to plot a scatter graph and save it as a png file.
-        """
+    def graph_query(self, region: str = "US", model: int = 512) -> tuple:
+        
         now_time = int(dt.datetime.today().timestamp())
         deck_prerelease = int(time.mktime(dt.datetime(2021, 7, 15).timetuple()))
         day3 = int(time.mktime(dt.datetime(2021, 7, 17).timetuple()))
 
         self.cur.execute("""SELECT rtReserveTime, ready_email FROM form 
-            WHERE model = 512 
-            AND region = 'US'
+            WHERE model = ? 
+            AND region = ?
             AND ready_email > ?  AND ready_email < ? 
             AND rtReserveTime < ?
-            """, [deck_prerelease, now_time, day3])
+            """, [model, region, deck_prerelease, now_time, day3])
         res = self.cur.fetchall()
 
         #y axis
@@ -86,32 +83,27 @@ class main:
 
         #x axis
         x_reserve = [dt.datetime.fromtimestamp(t[0]) for t in res]
-        xvals = [1,2,2,4,5]
-        yvals = [10,20,30, 40, 50]
+        return (x_reserve, y_email)
 
+
+    def graph(self) -> None:
+        """
+        Use the data from the database to plot a scatter graph and save it as a png file.
+        """
 
         fig, ax = plt.subplots()
+        #plt.subplots_adjust(bottom=0.15)
 
         ax.set_xlabel("Reserve time")
+        plt.xticks(rotation=45)
         ax.set_ylabel("Order email received")
 
-        ax.scatter(x_reserve, y_email, 50)
-        fig.savefig("mygraph.png")
-        #plt.plot(res)
-
-        """
-        reserve = [dt.datetime.fromtimestamp(t[0]) for t in res]
-        email = [dt.datetime.fromtimestamp(t[1]) for t in res]
-        print(len(reserve), len(email))
-        s = 10**2.
-        plt.scatter(reserve, email, s)
-        #plt.plot(reserve[0], email[0], "ro")
-        plt.ylabel("order email received")
-        plt.xlabel("Reserve time")
-        #plt.show()
-
-        plt.savefig("mygraph.png")
-        """
+        us_512_x, us_512_y = self.graph_query()
+        uk_512_x, uk_512_y = self.graph_query("UK")
+        ax.scatter(us_512_x, us_512_y, 10, label="US-512")
+        ax.scatter(uk_512_x, uk_512_y, 10, label="UK-512")
+        ax.legend()
+        fig.savefig("mygraph.png", bbox_inches="tight")
         return None
 
 
