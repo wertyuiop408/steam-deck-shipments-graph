@@ -102,7 +102,7 @@ class main:
         ax.scatter(us_512_x, us_512_y, 10, label="US-512")
         ax.scatter(uk_512_x, uk_512_y, 10, label="UK-512")
         ax.legend()
-        fig.savefig("mygraph.png", bbox_inches="tight")
+        fig.savefig("graph.png", bbox_inches="tight")
         return None
 
 
