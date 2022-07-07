@@ -17,6 +17,7 @@ class main:
         parser = argparse.ArgumentParser(allow_abbrev=False)
         parser.add_argument('--update', action="store_true")
         parser.add_argument('models', nargs="*", default=["UK-512", "US-512"])
+        parser.add_argument('--outfile', default="graph.png")
         self.args = parser.parse_args()
         
         # convert models to uppercase
@@ -106,7 +107,7 @@ class main:
             ax.scatter(x, y, 10, label=deck)
             
         ax.legend()
-        fig.savefig("graph.png", bbox_inches="tight")
+        fig.savefig(self.args.outfile, bbox_inches="tight")
         return None
 
 
