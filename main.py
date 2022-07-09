@@ -16,7 +16,7 @@ class main:
 
         parser = argparse.ArgumentParser(allow_abbrev=False)
         parser.add_argument("--update", action="store_true")
-        parser.add_argument("stats", action="store_true")
+        parser.add_argument("--stats", action="store_true")
         parser.add_argument("models", nargs="*", default=["UK-512", "US-512"])
         parser.add_argument("--outfile", default="graph.png")
         self.args = parser.parse_args()
@@ -51,7 +51,7 @@ class main:
         """
         Prints a breakdown of region/model entries in the database
         """
-        
+
         self.cur.execute("SELECT count(*) FROM form")
         print(f"total entries: {self.cur.fetchone()[0]}")
 
