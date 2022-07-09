@@ -101,6 +101,20 @@ class main:
         plt.xticks(rotation=45)
         ax.set_ylabel("Order email received")
 
+
+        if "ALL" in self.args.models:
+            self.args.models = [
+                "EU-512",
+                "EU-256",
+                "EU-64",
+                "UK-512",
+                "UK-256",
+                "UK-64",
+                "US-512",
+                "US-256",
+                "US-64"
+            ]
+
         for deck in self.args.models:
             region, model = deck.split("-")
             x, y = self.graph_query(region, model)
