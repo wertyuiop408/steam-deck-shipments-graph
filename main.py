@@ -70,6 +70,18 @@ class main:
         self.cur.execute("SELECT region, model, count(*) FROM form GROUP BY region, model")
         for row in self.cur.fetchall():
             print(f"{row[0]}-{row[1]} entries: {row[2]}")
+
+
+        #get the number of invalid entries in the database.
+        #some could be fatfingered by users
+        #TODO: <ready_email, but exclude 0
+        now_time = int(dt.datetime.today().timestamp())
+        deck_prerelease = int(time.mktime(dt.datetime(2021, 7, 15).timetuple()))
+        self.cur.execute("""SELECT count(*) FROM form
+            WHERE (rtReserveTime NOT BETWEEN ? AND ?)
+            OR (ready_email NOT BETWEEN ? AND ? AND ready_email != 0)""",
+            [deck_prerelease, now_time, deck_prerelease, now_time])
+        print(f"invalid entries: {self.cur.fetchone()[0]}")
         return None
 
 
