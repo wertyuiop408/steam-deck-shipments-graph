@@ -74,7 +74,6 @@ class main:
 
         #get the number of invalid entries in the database.
         #some could be fatfingered by users
-        #TODO: <ready_email, but exclude 0
         now_time = int(dt.datetime.today().timestamp())
         deck_prerelease = int(time.mktime(dt.datetime(2021, 7, 15).timetuple()))
         self.cur.execute("""SELECT count(*) FROM form
