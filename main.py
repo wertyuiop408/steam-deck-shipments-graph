@@ -15,9 +15,10 @@ class main:
     def __init__(self):
 
         parser = argparse.ArgumentParser(allow_abbrev=False)
-        parser.add_argument('--update', action="store_true")
-        parser.add_argument('models', nargs="*", default=["UK-512", "US-512"])
-        parser.add_argument('--outfile', default="graph.png")
+        parser.add_argument("--update", action="store_true")
+        parser.add_argument("stats", action="store_true")
+        parser.add_argument("models", nargs="*", default=["UK-512", "US-512"])
+        parser.add_argument("--outfile", default="graph.png")
         self.args = parser.parse_args()
         
         # convert models to uppercase
@@ -32,6 +33,9 @@ class main:
 
         self.graph()
 
+        if self.args.stats:
+            self.stats()
+
 
     def get_sheet(self) -> None:
         """
@@ -40,6 +44,20 @@ class main:
         csv_url = "https://docs.google.com/spreadsheets/d/1QqlSUpqhyBCBYeu_gW4w5vIxfcd7qablSviALDFJ0Dg/export?format=csv"
         res = requests.get(url = csv_url)
         open("google.csv", "wb").write(res.content)
+        return None
+
+
+    def stats(self) -> None:
+        """
+        Prints a breakdown of region/model entries in the database
+        """
+        
+        self.cur.execute("SELECT count(*) FROM form")
+        print(f"total entries: {self.cur.fetchone()[0]}")
+
+        self.cur.execute("SELECT region, model, count(*) FROM form GROUP BY region, model")
+        for row in self.cur.fetchall():
+            print(f"{row[0]}-{row[1]} entries: {row[2]}")
         return None
 
 
