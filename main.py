@@ -70,7 +70,11 @@ class main:
     def graph_query(self, region: str = "US", model: int = 512) -> tuple:
         
         now_time = int(dt.datetime.today().timestamp())
+
+        #the date the the steam deck was on sale (reserve)
         deck_prerelease = int(time.mktime(dt.datetime(2021, 7, 15).timetuple()))
+
+        #only get info for orders within the first 2 days. Otherwise it's info overload and 512 orders get heavily squished.
         day3 = int(time.mktime(dt.datetime(2021, 7, 17).timetuple()))
 
         self.cur.execute("""SELECT rtReserveTime, ready_email FROM form 
