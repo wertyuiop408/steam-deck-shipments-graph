@@ -15,13 +15,22 @@ class main:
 
     def __init__(self):
         parser = argparse.ArgumentParser(allow_abbrev=False)
-        parser.add_argument("--update", action="store_true")
+        parser.add_argument("--update", action="store_true",
+            help="Download a fresh copy of the data from the Google Spreadsheet")
 
         # matplotlibrc figure.dpi default is 'figure' which is 100
-        parser.add_argument("--dpi", default=100, type=int)
-        parser.add_argument("--stats", action="store_true")
-        parser.add_argument("models", nargs="*", default=["UK-512", "US-512"])
-        parser.add_argument("--outfile", default="graph.png")
+        parser.add_argument("--dpi", default=100, type=int,
+            help="Resolution in dots per inch (default: 100)")
+
+        parser.add_argument("--stats", action="store_true",
+            help="Print to terminal basic stats about orders")
+
+        parser.add_argument("models", nargs="*", default=["UK-512", "US-512"],
+            help="The models and region to display. Format is region-model#, e.g. uk-512. 'all' can be used to show all models/regions")
+
+        parser.add_argument("--outfile", "-o", default="graph.png",
+            help="Location and name (relative) to save the image (default: graph.png)")
+
         self.args = parser.parse_args()
         
         # convert models to uppercase
