@@ -7,15 +7,18 @@ import time
 
 import matplotlib.pyplot as plt
 import matplotlib.dates as md
+import matplotlib as mpl
 
 
 class main:
     cur = None
 
     def __init__(self):
-
         parser = argparse.ArgumentParser(allow_abbrev=False)
         parser.add_argument("--update", action="store_true")
+
+        # matplotlibrc figure.dpi default is 'figure' which is 100
+        parser.add_argument("--dpi", default=100, type=int)
         parser.add_argument("--stats", action="store_true")
         parser.add_argument("models", nargs="*", default=["UK-512", "US-512"])
         parser.add_argument("--outfile", default="graph.png")
@@ -143,7 +146,7 @@ class main:
             ax.scatter(x, y, 10, label=deck)
             
         ax.legend()
-        fig.savefig(self.args.outfile, bbox_inches="tight")
+        fig.savefig(self.args.outfile, bbox_inches="tight", dpi=self.args.dpi)
         return None
 
 
