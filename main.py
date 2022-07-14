@@ -121,7 +121,7 @@ class main:
         self.cur.execute("""SELECT rtReserveTime, ready_email FROM form 
             WHERE model = ? 
             AND region = ?
-            AND ready_email > ?  AND ready_email < ? 
+            AND (ready_email BETWEEN ? AND ?)
             AND rtReserveTime < ?
             """, [model, region, deck_prerelease, now_time, day3])
         res = self.cur.fetchall()
